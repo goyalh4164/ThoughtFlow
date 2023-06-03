@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { commentSchema } from './Comment';
+import { commentSchema } from './Comment.js';
 
 const blogSchema = mongoose.Schema({
   title: {

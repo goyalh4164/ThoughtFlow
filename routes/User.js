@@ -64,6 +64,13 @@ router.put('/:userId', authenticateUser, async (req, res) => {
   try {
     const userId = req.params.userId;
     const updates = req.body;
+
+    // Check if the password is being updated
+    if (updates.password) {
+      // Hash the updated password
+      updates.password = await bcrypt.hash(updates.password, 10);
+    }
+
     const user = await User.findByIdAndUpdate(userId, updates, { new: true });
     if (!user) {
       throw new Error('User not found.');
@@ -73,6 +80,7 @@ router.put('/:userId', authenticateUser, async (req, res) => {
     res.status(404).json({ error: error.message });
   }
 });
+
 
 // Route: Delete user account
 router.delete('/:userId', authenticateUser, async (req, res) => {
