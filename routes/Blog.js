@@ -7,7 +7,7 @@ import Blog from '../models/Blog.js';
 router.post('/', authenticateUser, async (req, res) => {
   try {
     const { title, content, author, tags } = req.body;
-    const blog = new Blog({ title, content, author, tags });
+    const blog = new Blog({ title, content, author, tags, likes: 0, comments: [] });
     await blog.save();
     res.status(201).json({ message: 'Blog post created successfully.' });
   } catch (error) {
@@ -63,6 +63,39 @@ router.delete('/:blogId', authenticateUser, async (req, res) => {
       throw new Error('Blog post not found.');
     }
     res.json({ message: 'Blog post deleted successfully.' });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+// Route: Add a comment to a blog post
+router.post('/:blogId/comments', authenticateUser, async (req, res) => {
+  try {
+    const blogId = req.params.blogId;
+    const { comment } = req.body;
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      throw new Error('Blog post not found.');
+    }
+    blog.comments.push(comment);
+    await blog.save();
+    res.json({ message: 'Comment added successfully.' });
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+});
+
+// Route: Add a like to a blog post
+router.post('/:blogId/likes', authenticateUser, async (req, res) => {
+  try {
+    const blogId = req.params.blogId;
+    const blog = await Blog.findById(blogId);
+    if (!blog) {
+      throw new Error('Blog post not found.');
+    }
+    blog.likes++;
+    await blog.save();
+    res.json({ message: 'Like added successfully.' });
   } catch (error) {
     res.status(404).json({ error: error.message });
   }

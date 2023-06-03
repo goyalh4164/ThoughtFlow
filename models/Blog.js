@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
+import { commentSchema } from './Comment';
 
-const { Schema } = mongoose;
-
-const blogSchema = new Schema({
+const blogSchema = mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -12,7 +11,7 @@ const blogSchema = new Schema({
     required: true,
   },
   author: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -23,6 +22,14 @@ const blogSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  comments: {
+    type: [commentSchema],
+    default: [],
   },
 });
 

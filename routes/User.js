@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
     if (!passwordsMatch) {
       throw new Error('Invalid email or password.');
     }
-    const token = jwt.sign({ userId: user._id }, 'your-secret-key');
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY);
     
     // Set the token as a cookie in the response
     res.cookie('token', token, {
