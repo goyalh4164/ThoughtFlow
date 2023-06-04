@@ -33,7 +33,7 @@ export const loginUser = async (req, res) => {
       // Other cookie options if needed
     });
 
-    res.json({ token });
+    res.json({ token ,message : "Logged in Succesfully"});
   } catch (error) {
     res.status(401).json({ error: error.message });
   }
