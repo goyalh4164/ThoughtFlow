@@ -6,8 +6,9 @@ import Blog from '../models/Blog.js';
 // Route: Create a new blog post
 router.post('/', authenticateUser, async (req, res) => {
   try {
-    const { title, content, author, tags } = req.body;
-    const blog = new Blog({ title, content, author, tags, likes: 0, comments: [] });
+    const { title, content, tags } = req.body;
+    const { userId, author } = req.body; // Destructure userId and author from the request body
+    const blog = new Blog({ title, content, userId, author, tags, likes: 0, comments: [] });
     await blog.save();
     res.status(201).json({ message: 'Blog post created successfully.' });
   } catch (error) {
@@ -73,17 +74,19 @@ router.post('/:blogId/comments', authenticateUser, async (req, res) => {
   try {
     const blogId = req.params.blogId;
     const { comment } = req.body;
+    const author = req.body.author; // Extract the author from the authenticated user
     const blog = await Blog.findById(blogId);
     if (!blog) {
       throw new Error('Blog post not found.');
     }
-    blog.comments.push(comment);
+    blog.comments.push({ comment, author });
     await blog.save();
     res.json({ message: 'Comment added successfully.' });
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
 });
+
 
 // Route: Add a like to a blog post
 router.post('/:blogId/likes', authenticateUser, async (req, res) => {

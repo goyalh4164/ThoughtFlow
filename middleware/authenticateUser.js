@@ -14,7 +14,11 @@ export const authenticateUser = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ error: 'Invalid authentication token.' });
     }
-    req.user = user;
+    
+    // Set userId and author in the request body
+    req.body.userId = user._id;
+    req.body.author = user.username;
+    
     next();
   } catch (error) {
     res.status(401).json({ error: 'Invalid authentication token.' });

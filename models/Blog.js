@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import { commentSchema } from './Comment.js';
-
 const blogSchema = mongoose.Schema({
   title: {
     type: String,
@@ -10,9 +8,13 @@ const blogSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  author: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true,
+  },
+  author: {
+    type: String,
     required: true,
   },
   tags: {
@@ -27,10 +29,20 @@ const blogSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  comments: {
-    type: [commentSchema],
-    default: [],
-  },
+  comments: [
+    {
+      comment: {
+        type: String,
+        required: true,
+      },
+      author: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+}, { 
+  comments: [] // Set default value to an empty array
 });
 
 const Blog = mongoose.model('Blog', blogSchema);
