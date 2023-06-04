@@ -2,106 +2,28 @@ import express from 'express';
 const router = express.Router();
 import { authenticateUser } from '../middleware/authenticateUser.js';
 import Blog from '../models/Blog.js';
+import { createBlogPost,getAllBlogPosts,getBlogPost,updateBlogPost,deleteBlogPost,addCommentToBlogPost,addLikeToBlogPost } from '../controllers/Blog.js';
 
 // Route: Create a new blog post
-router.post('/', authenticateUser, async (req, res) => {
-  try {
-    const { title, content, tags } = req.body;
-    const { userId, author } = req.body; // Destructure userId and author from the request body
-    const blog = new Blog({ title, content, userId, author, tags, likes: 0, comments: [] });
-    await blog.save();
-    res.status(201).json({ message: 'Blog post created successfully.' });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
+router.post('/', authenticateUser, createBlogPost);
 
 // Route: Get all blog posts
-router.get('/', authenticateUser, async (req, res) => {
-  try {
-    const blogs = await Blog.find();
-    res.json(blogs);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.get('/', authenticateUser, getAllBlogPosts);
 
 // Route: Get a specific blog post
-router.get('/:blogId', authenticateUser, async (req, res) => {
-  try {
-    const blogId = req.params.blogId;
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      throw new Error('Blog post not found.');
-    }
-    res.json(blog);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.get('/:blogId', authenticateUser, getBlogPost);
 
 // Route: Update a specific blog post
-router.put('/:blogId', authenticateUser, async (req, res) => {
-  try {
-    const blogId = req.params.blogId;
-    const updates = req.body;
-    const blog = await Blog.findByIdAndUpdate(blogId, updates, { new: true });
-    if (!blog) {
-      throw new Error('Blog post not found.');
-    }
-    res.json(blog);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.put('/:blogId', authenticateUser, updateBlogPost);
 
 // Route: Delete a specific blog post
-router.delete('/:blogId', authenticateUser, async (req, res) => {
-  try {
-    const blogId = req.params.blogId;
-    const blog = await Blog.findByIdAndDelete(blogId);
-    if (!blog) {
-      throw new Error('Blog post not found.');
-    }
-    res.json({ message: 'Blog post deleted successfully.' });
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.delete('/:blogId', authenticateUser, deleteBlogPost);
 
 // Route: Add a comment to a blog post
-router.post('/:blogId/comments', authenticateUser, async (req, res) => {
-  try {
-    const blogId = req.params.blogId;
-    const { comment } = req.body;
-    const author = req.body.author; // Extract the author from the authenticated user
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      throw new Error('Blog post not found.');
-    }
-    blog.comments.push({ comment, author });
-    await blog.save();
-    res.json({ message: 'Comment added successfully.' });
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.post('/:blogId/comments', authenticateUser, addCommentToBlogPost);
 
 
 // Route: Add a like to a blog post
-router.post('/:blogId/likes', authenticateUser, async (req, res) => {
-  try {
-    const blogId = req.params.blogId;
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      throw new Error('Blog post not found.');
-    }
-    blog.likes++;
-    await blog.save();
-    res.json({ message: 'Like added successfully.' });
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
-});
+router.post('/:blogId/likes', authenticateUser, addLikeToBlogPost);
 
 export default router;
