@@ -8,6 +8,14 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY);
+    
+    // Set the token as a cookie in the response
+    res.cookie("token", token, {
+      httpOnly: true,
+      // Other cookie options if needed
+    });
+    
     res.status(201).json({ message: "User registered successfully." });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -83,5 +91,16 @@ export const deleteUserAccount = async (req, res) => {
     res.json({ message: "User deleted successfully." });
   } catch (error) {
     res.status(404).json({ error: error.message });
+  }
+};
+
+export const logoutUserAccount = async (req, res) => {
+  try {
+    // Clear the token cookie
+    res.clearCookie('token');
+
+    res.json({ message: 'User logged out successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
