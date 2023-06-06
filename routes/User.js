@@ -13,7 +13,7 @@ router.post('/register', registerUser);
 router.post('/login',loginUser);
 
 // Route: Get user profile
-router.get('/:userId', authenticateUser, getUserProfile);
+router.get('/profile', authenticateUser, getUserProfile);
 
 // Route: Update user profile
 router.put('/:userId', authenticateUser,updateUserProfile);

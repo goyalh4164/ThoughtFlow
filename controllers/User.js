@@ -49,7 +49,8 @@ export const loginUser = async (req, res) => {
 
 export const getUserProfile = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    // const userId = req.params.userId;
+    const userId = req.body.userId;
     const user = await User.findById(userId);
     if (!user) {
       throw new Error("User not found.");
